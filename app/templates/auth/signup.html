@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+  <h2>Sign Up</h2>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in messages %}
+      <div class="alert alert-{{ category }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+  <form method="post" action="{{ url_for('auth.signup') }}">
+    <div><label>Name:</label><input type="text" name="name" required></div>
+    <div><label>Email:</label><input type="email" name="email" required></div>
+    <div><label>Password:</label><input type="password" name="password" required></div>
+    <div><label>Confirm Password:</label><input type="password" name="confirm" required></div>
+
+    <div class="mb-3">
+      <label for="airport_id" class="form-label">Port of Origin</label>
+      <select id="airport_id" name="airport_id" class="form-select" required>
+        <option value="">-- Select Airport --</option>
+        {% for airport in airports %}
+          <option value="{{ airport.id }}">{{ airport.name }} ({{ airport.iata_code }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="country_id" class="form-label">Country of Residence</label>
+      <select id="country_id" name="country_id" class="form-select" required>
+        <option value="">-- Select Country --</option>
+        {% for country in countries %}
+          <option value="{{ country.id }}">{{ country.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+  </form>
+  <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+{% endblock %}

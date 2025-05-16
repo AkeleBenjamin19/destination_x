@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Destinations{% endblock %}
+
+{% block content %}
+<div class="py-4">
+  <h1 class="mb-4">Explore, Find Your Perfect Destination.</h1>
+
+  <!-- Filters Form -->
+  <form method="get" class="row g-3 mb-4">
+    <div class="col-auto">
+      <label for="visa" class="form-label">Visa</label>
+      <select id="visa" name="visa" class="form-select">
+        <option value="free" {% if visa_filter=='free' %}selected{% endif %}>Visa Free</option>
+        <option value="required" {% if visa_filter=='required' %}selected{% endif %}>Visa Required</option>
+      </select>
+    </div>
+    <div class="col-auto form-check">
+      <input class="form-check-input" type="checkbox" id="in_budget" name="in_budget" {% if in_budget %}checked{% endif %}>
+      <label class="form-check-label" for="in_budget">In Budget</label>
+    </div>
+    <div class="col-auto form-check">
+      <input class="form-check-input" type="checkbox" id="available_to_passport" name="available_to_passport" {% if passport_ok %}checked{% endif %}>
+      <label class="form-check-label" for="available_to_passport">Passport OK</label>
+    </div>
+    <div class="col-auto">
+      <label for="sort_by" class="form-label">Sort By</label>
+      <select id="sort_by" name="sort_by" class="form-select">
+        <option value="score" {% if sort_by=='score' %}selected{% endif %}>Score</option>
+        <option value="distance" {% if sort_by=='distance' %}selected{% endif %}>Distance</option>
+      </select>
+    </div>
+    <div class="col-auto">
+      <input type="text" class="form-control" name="search" placeholder="Search cities..." value="{{ search }}">
+    </div>
+    <div class="col-auto align-self-end">
+      <button type="submit" class="btn btn-primary">Apply</button>
+    </div>
+  </form>
+
+  <!-- Destinations List -->
+  <div id="dest-list" class="list-group">
+    {% for it in items %}
+      <div class="list-group-item mb-3 p-3 rounded">
+        <h4>{{ it.city }} <span class="text-success">Allowed to Visit</span></h4>
+        <small class="text-muted">{{ it.country }}</small>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination Controls -->
+  <nav aria-label="Destinations pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+        <a class="page-link" href="#" id="prev-page">Previous</a>
+      </li>
+      {% for p in range(1, pages+1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+          <a class="page-link" href="#" data-page="{{ p }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+      <li class="page-item {% if page >= pages %}disabled{% endif %}">
+        <a class="page-link" href="#" id="next-page">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    window.destConfig = {
+      page: {{ page }},
+      pages: {{ pages }},
+      visaFilter: "{{ visa_filter }}",
+      inBudget: "{{ 'on' if in_budget else '' }}",
+      passportOk: "{{ 'on' if passport_ok else '' }}",
+      sortBy: "{{ sort_by }}",
+      search: "{{ search }}"
+    };
+  </script>
+  <script src="{{ url_for('static', filename='js/destinations.js') }}"></script>
+{% endblock %}
